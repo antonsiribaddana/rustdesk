@@ -473,9 +473,11 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     brightness: Brightness.dark,
-    hoverColor: Color.fromARGB(255, 45, 46, 53),
-    scaffoldBackgroundColor: Color(0xFF18191E),
-    dialogBackgroundColor: Color(0xFF18191E),
+    hoverColor: Color(0xFF1A1245),
+    scaffoldBackgroundColor: Color(0xFF0D0627),
+    dialogBackgroundColor: Color(0xFF120A33),
+    canvasColor: Color(0xFF0D0627),
+    cardColor: Color(0xFF160C3A),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
     ),
@@ -3960,7 +3962,7 @@ bool get isCustomClient {
 }
 
 get defaultOptionLang => isCustomClient ? 'default' : '';
-get defaultOptionTheme => isCustomClient ? 'system' : '';
+get defaultOptionTheme => isCustomClient ? 'dark' : '';
 get defaultOptionYes => isCustomClient ? 'Y' : '';
 get defaultOptionNo => isCustomClient ? 'N' : '';
 get defaultOptionWhitelist => isCustomClient ? ',' : '';
