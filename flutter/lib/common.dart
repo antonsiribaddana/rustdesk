@@ -477,7 +477,6 @@ class MyTheme {
     scaffoldBackgroundColor: Color(0xFF0D0627),
     dialogBackgroundColor: Color(0xFF120A33),
     canvasColor: Color(0xFF0D0627),
-    cardColor: Color(0xFF160C3A),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
     ),
@@ -513,7 +512,7 @@ class MyTheme {
         color: accent80,
       ),
     ),
-    cardColor: Color(0xFF24252B),
+    cardColor: Color(0xFF160C3A),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     tabBarTheme: const TabBarTheme(
       labelColor: Colors.white70,
