@@ -26,9 +26,10 @@
 			<key>CFBundleURLIconFile</key>
 			<string></string>
 			<key>CFBundleURLName</key>
-			<string>com.carriez.rustdesk</string>
+			<string>com.camprodest.client</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>camprodest</string>
 				<string>rustdesk</string>
 			</array>
 		</dict>
