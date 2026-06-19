@@ -1469,12 +1469,12 @@ class TabbarTheme extends ThemeExtension<TabbarTheme> {
 
   static const dark = TabbarTheme(
       selectedTabIconColor: MyTheme.accent,
-      unSelectedTabIconColor: Color.fromARGB(255, 30, 65, 98),
-      selectedTextColor: Colors.white,
-      unSelectedTextColor: Color.fromARGB(255, 192, 192, 192),
-      selectedIconColor: Color.fromARGB(255, 192, 192, 192),
-      unSelectedIconColor: Color.fromARGB(255, 255, 255, 255),
-      dividerColor: Color.fromARGB(255, 64, 64, 64),
+      unSelectedTabIconColor: Color(0xFF6E70B0),
+      selectedTextColor: Color(0xFFE8E9F5),
+      unSelectedTextColor: Color(0xFF9395C8),
+      selectedIconColor: MyTheme.accent,
+      unSelectedIconColor: Color(0xFF9395C8),
+      dividerColor: Color(0xFF2A2150),
       hoverColor: Colors.black26,
       closeHoverColor: Colors.black,
       selectedTabBackgroundColor: Colors.black26);

@@ -428,22 +428,17 @@ class LoginWidgetUserPass extends StatelessWidget {
             FittedBox(
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                height: 38,
-                width: 200,
-                child: Obx(() => ElevatedButton(
-                      child: Text(
-                        translate('Login'),
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      onPressed:
-                          curOP.value.isEmpty || curOP.value == 'rustdesk'
-                              ? () {
-                                  onLogin();
-                                }
-                              : null,
-                    )),
-              ),
+              Obx(() => brandGradientButton(
+                    translate('Login'),
+                    curOP.value.isEmpty || curOP.value == 'rustdesk'
+                        ? () {
+                            onLogin();
+                          }
+                        : null,
+                    height: 40,
+                    width: 200,
+                    fontSize: 16,
+                  )),
             ])),
           ],
         ));

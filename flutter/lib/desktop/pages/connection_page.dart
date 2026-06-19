@@ -516,14 +516,13 @@ class _ConnectionPageState extends State<ConnectionPage>
             Padding(
               padding: const EdgeInsets.only(top: 13.0),
               child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                SizedBox(
-                  height: 28.0,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      onConnect();
-                    },
-                    child: Text(translate("Connect")),
-                  ),
+                brandGradientButton(
+                  translate("Connect"),
+                  () {
+                    onConnect();
+                  },
+                  height: 30.0,
+                  fontSize: 13,
                 ),
                 const SizedBox(width: 8),
                 Container(

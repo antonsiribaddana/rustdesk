@@ -497,16 +497,18 @@ class MyTheme {
             fillColor: Color(0x99160C3A),
             filled: true,
             isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            hintStyle: TextStyle(color: Color(0x99B9BCF0)),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Color(0x335E66FF)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Color(0x335E66FF)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Color(0xFF5E66FF), width: 1.5),
             ),
           )
@@ -2975,6 +2977,58 @@ class ServerConfig {
         relayServer = options['relay-server'] ?? "",
         apiServer = options['api-server'] ?? "",
         key = options['key'] ?? "";
+}
+
+// Camprodest brand gradient button (indigo -> purple -> pink), pill shaped.
+Widget brandGradientButton(String text, VoidCallback? onPressed,
+    {double height = 38, double? width, double fontSize = 14}) {
+  final enabled = onPressed != null;
+  return Opacity(
+    opacity: enabled ? 1.0 : 0.45,
+    child: Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(height / 2),
+        gradient: const LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [Color(0xFF6A69F3), Color(0xFF9B59B6), Color(0xFFE87F9F)],
+        ),
+        boxShadow: enabled
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF6A69F3).withOpacity(0.35),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ]
+            : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(height / 2),
+          onTap: onPressed,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: fontSize,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 Widget dialogButton(String text,
