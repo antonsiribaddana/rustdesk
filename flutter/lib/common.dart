@@ -183,17 +183,17 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
   );
 
   static final dark = ColorThemeExtension(
-    border: Color(0xFF555555),
-    border2: Color(0xFFE5E5E5),
-    border3: Colors.white24,
-    highlight: Color(0xFF3F3F3F),
-    drag_indicator: Colors.grey,
-    shadow: Colors.grey,
+    border: Color(0x335E66FF),
+    border2: Color(0x225E66FF),
+    border3: Color(0x1A5E66FF),
+    highlight: Color(0x335E66FF),
+    drag_indicator: Color(0xFF6A69F3),
+    shadow: Colors.black,
     errorBannerBg: Color(0xFF470F2D),
     me: Colors.greenAccent,
-    toastBg: Colors.white.withOpacity(0.6),
-    toastText: Colors.black,
-    divider: Colors.white38,
+    toastBg: Color(0xCC160C3A),
+    toastText: Color(0xFFE8E9F5),
+    divider: Color(0x1A5E66FF),
   );
 
   @override
@@ -477,6 +477,7 @@ class MyTheme {
     scaffoldBackgroundColor: Color(0xFF0D0627),
     dialogBackgroundColor: Color(0xFF120A33),
     canvasColor: Color(0xFF0D0627),
+    iconTheme: const IconThemeData(color: Color(0xFFB9BCF0)),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
     ),
@@ -486,18 +487,27 @@ class MyTheme {
         borderRadius: BorderRadius.circular(18.0),
         side: BorderSide(
           width: 1,
-          color: Color(0xFF24252B),
+          color: Color(0x335E66FF),
         ),
       ),
     ),
     scrollbarTheme: scrollbarThemeDark,
     inputDecorationTheme: (isDesktop || isWebDesktop)
         ? InputDecorationTheme(
-            fillColor: Color(0xFF24252B),
+            fillColor: Color(0x99160C3A),
             filled: true,
             isDense: true,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Color(0x335E66FF)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Color(0x335E66FF)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Color(0xFF5E66FF), width: 1.5),
             ),
           )
         : null,
@@ -539,19 +549,23 @@ class MyTheme {
         foregroundColor: Colors.white,
         disabledForegroundColor: Colors.white70,
         disabledBackgroundColor: Colors.white10,
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        alignment: Alignment.center,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        backgroundColor: Color(0xFF24252B),
-        side: BorderSide(color: Colors.white12, width: 0.5),
+        backgroundColor: Color(0x33160C3A),
+        side: BorderSide(color: Color(0x335E66FF), width: 1),
         disabledForegroundColor: Colors.white70,
-        foregroundColor: Colors.white70,
+        foregroundColor: Color(0xFFE8E9F5),
+        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        alignment: Alignment.center,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
       ),
     ),
@@ -561,9 +575,9 @@ class MyTheme {
     listTileTheme: listTileTheme,
     menuBarTheme: MenuBarThemeData(
         style: MenuStyle(
-            backgroundColor: MaterialStatePropertyAll(Color(0xFF121212)))),
+            backgroundColor: MaterialStatePropertyAll(Color(0xFF120A33)))),
     colorScheme: ColorScheme.dark(
-      primary: Colors.blue,
+      primary: MyTheme.accent,
       secondary: accent,
       background: Color(0xFF24252B),
     ),
