@@ -444,11 +444,12 @@ class _CmHeaderState extends State<_CmHeader>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.0),
         gradient: LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment.bottomLeft,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Color(0xff00bfe1),
-            Color(0xff0071ff),
+            Color(0xFF6A69F3),
+            Color(0xFF9B59B6),
+            Color(0xFFE87F9F),
           ],
         ),
       ),
@@ -618,7 +619,9 @@ class _PrivilegeBoardState extends State<_PrivilegeBoard> {
       child: Container(
         decoration: BoxDecoration(
           color: enabled
-              ? (canModify ? MyTheme.accent : MyTheme.accent.withOpacity(0.6))
+              ? (canModify
+                  ? Color(0xFF5E66FF)
+                  : Color(0xFF5E66FF).withOpacity(0.6))
               : Colors.grey[700],
           borderRadius: BorderRadius.circular(10.0),
         ),
