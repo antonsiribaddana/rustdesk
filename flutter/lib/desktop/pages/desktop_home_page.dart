@@ -244,8 +244,15 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                         controller: model.serverId,
                         readOnly: true,
                         decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.only(top: 10, bottom: 10),
+                          filled: false,
+                          isDense: true,
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Color(0x335E66FF))),
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Color(0xFF5E66FF), width: 1.5)),
+                          contentPadding: EdgeInsets.only(top: 8, bottom: 10),
                         ),
                         style: TextStyle(
                           fontSize: 22,
@@ -341,9 +348,16 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                             controller: model.serverPasswd,
                             readOnly: true,
                             decoration: InputDecoration(
-                              border: InputBorder.none,
+                              filled: false,
+                              isDense: true,
+                              enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: Color(0x335E66FF))),
+                              focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color(0xFF5E66FF), width: 1.5)),
                               contentPadding:
-                                  EdgeInsets.only(top: 14, bottom: 10),
+                                  EdgeInsets.only(top: 10, bottom: 10),
                             ),
                             style: TextStyle(fontSize: 15),
                           ).workaroundFreezeLinuxMint(),

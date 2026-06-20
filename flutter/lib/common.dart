@@ -274,7 +274,16 @@ class MyTheme {
 
   static SwitchThemeData switchTheme() {
     return SwitchThemeData(
-        splashRadius: (isDesktop || isWebDesktop) ? 0 : kRadialReactionRadius);
+        splashRadius: (isDesktop || isWebDesktop) ? 0 : kRadialReactionRadius,
+        thumbColor: MaterialStateProperty.resolveWith<Color?>((states) =>
+            states.contains(MaterialState.selected)
+                ? const Color(0xFF5E66FF)
+                : const Color(0xFFB9BCF0)),
+        trackColor: MaterialStateProperty.resolveWith<Color?>((states) =>
+            states.contains(MaterialState.selected)
+                ? const Color(0x885E66FF)
+                : const Color(0x223B3170)),
+        trackOutlineColor: MaterialStateProperty.all(const Color(0x335E66FF)));
   }
 
   static RadioThemeData radioTheme() {
@@ -477,6 +486,7 @@ class MyTheme {
     scaffoldBackgroundColor: Color(0xFF0D0627),
     dialogBackgroundColor: Color(0xFF120A33),
     canvasColor: Color(0xFF0D0627),
+    dividerColor: Color(0x1A5E66FF),
     iconTheme: const IconThemeData(color: Color(0xFFB9BCF0)),
     appBarTheme: AppBarTheme(
       shadowColor: Colors.transparent,
@@ -551,8 +561,15 @@ class MyTheme {
         foregroundColor: Colors.white,
         disabledForegroundColor: Colors.white70,
         disabledBackgroundColor: Colors.white10,
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        minimumSize: const Size(64, 42),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         alignment: Alignment.center,
+        textStyle: const TextStyle(
+            fontFamily: 'WorkSans',
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            height: 1.0,
+            letterSpacing: 0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
@@ -564,8 +581,15 @@ class MyTheme {
         side: BorderSide(color: Color(0x335E66FF), width: 1),
         disabledForegroundColor: Colors.white70,
         foregroundColor: Color(0xFFE8E9F5),
-        padding: EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        minimumSize: const Size(64, 42),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         alignment: Alignment.center,
+        textStyle: const TextStyle(
+            fontFamily: 'WorkSans',
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            height: 1.0,
+            letterSpacing: 0.2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
