@@ -111,9 +111,15 @@ class ButtonOP extends StatelessWidget {
         width: 200,
         child: Obx(() => ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: curOP.value.isEmpty || curOP.value == op
-                  ? primaryColor
-                  : Colors.grey,
+              backgroundColor: Colors.transparent,
+              foregroundColor: const Color(0xFFE8E9F5),
+              side: BorderSide(
+                  color: curOP.value.isEmpty || curOP.value == op
+                      ? const Color(0x885E66FF)
+                      : const Color(0x33888888),
+                  width: 1.5),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ).copyWith(elevation: ButtonStyleButton.allOrNull(0.0)),
             onPressed: curOP.value.isEmpty || curOP.value == op ? onTap : null,
             child: Row(

@@ -770,7 +770,7 @@ class _PasswordWidgetState extends State<PasswordWidget> {
         icon: Icon(
             // Based on passwordVisible state choose the icon
             _passwordVisible ? Icons.visibility : Icons.visibility_off,
-            color: MyTheme.lightTheme.primaryColor),
+            color: MyTheme.accent),
         onPressed: () {
           // Update the state i.e. toggle the state of passwordVisible variable
           setState(() {

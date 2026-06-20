@@ -245,14 +245,13 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                         readOnly: true,
                         decoration: InputDecoration(
                           filled: false,
-                          isDense: true,
                           enabledBorder: UnderlineInputBorder(
                               borderSide:
                                   BorderSide(color: Color(0x335E66FF))),
                           focusedBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
                                   color: Color(0xFF5E66FF), width: 1.5)),
-                          contentPadding: EdgeInsets.only(top: 8, bottom: 10),
+                          contentPadding: EdgeInsets.only(top: 12, bottom: 10),
                         ),
                         style: TextStyle(
                           fontSize: 22,

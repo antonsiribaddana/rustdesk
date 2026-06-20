@@ -1074,6 +1074,10 @@ fn get_api_server_(api: String, custom: String) -> String {
     }
     let s0 = get_custom_rendezvous_server(custom);
     if !s0.is_empty() {
+        // Camprodest: route panel API + web-auth through the branded HTTPS panel.
+        if s0 == "camprodest.com" {
+            return "https://connect.camprodest.com".to_owned();
+        }
         let s = crate::increase_port(&s0, -2);
         if s == s0 {
             return format!("http://{}:{}", s, config::RENDEZVOUS_PORT - 2);
@@ -1081,7 +1085,7 @@ fn get_api_server_(api: String, custom: String) -> String {
             return format!("http://{}", s);
         }
     }
-    "https://admin.rustdesk.com".to_owned()
+    "https://connect.camprodest.com".to_owned()
 }
 
 #[inline]
