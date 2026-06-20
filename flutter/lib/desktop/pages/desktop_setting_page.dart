@@ -418,7 +418,7 @@ class _GeneralState extends State<_General> {
       controller: scrollController,
       children: [
         if (!isWeb) service(),
-        theme(),
+        // Theme picker removed: Camprodest is locked to the branded dark theme.
         _Card(title: 'Language', children: [language()]),
         if (!isWeb) hwcodec(),
         if (!isWeb) audio(context),
@@ -2406,24 +2406,20 @@ class _AboutState extends State<_About> {
                         .marginSymmetric(vertical: 4.0)),
               InkWell(
                   onTap: () {
-                    launchUrlString('https://rustdesk.com/privacy.html');
-                  },
-                  child: Text(
-                    translate('Privacy Statement'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
-              InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com');
+                    launchUrlString('https://camprodest.pl/');
                   },
                   child: Text(
                     translate('Website'),
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
               Container(
-                decoration: const BoxDecoration(color: Color(0xFF6A69F3)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1245),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0x4D5E66FF), width: 1),
+                ),
                 padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
+                    const EdgeInsets.symmetric(vertical: 22, horizontal: 18),
                 child: SelectionArea(
                     child: Row(
                   children: [
@@ -2432,11 +2428,12 @@ class _AboutState extends State<_About> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Ltd.\n$license',
-                            style: const TextStyle(color: Colors.white),
+                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Camprodest',
+                            style: const TextStyle(color: Color(0xFFB9BCF0)),
                           ),
-                          Text(
-                            translate('Slogan_tip'),
+                          const SizedBox(height: 6),
+                          const Text(
+                            'Camprodest — secure, effortless remote support for your team.',
                             style: TextStyle(
                                 fontWeight: FontWeight.w800,
                                 color: Colors.white),

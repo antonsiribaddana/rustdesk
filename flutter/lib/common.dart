@@ -620,7 +620,9 @@ class MyTheme {
   );
 
   static ThemeMode getThemeModePreference() {
-    return themeModeFromString(bind.mainGetLocalOption(key: kCommConfKeyTheme));
+    // Camprodest: always force the branded dark theme; the light theme is
+    // intentionally not shipped/branded and the Theme picker is hidden.
+    return ThemeMode.dark;
   }
 
   static Future<void> changeDarkMode(ThemeMode mode) async {

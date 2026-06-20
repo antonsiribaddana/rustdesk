@@ -126,7 +126,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     return ChangeNotifierProvider.value(
       value: gFFI.serverModel,
       child: Container(
-        width: isIncomingOnly ? 280.0 : 200.0,
+        width: isIncomingOnly ? 300.0 : 240.0,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -190,6 +190,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
           colors: [Color(0xFF0D0627), Color(0xFF160C3A)],
         ),
       ),
+      padding: const EdgeInsets.only(left: 14),
       child: ConnectionPage(),
     );
   }
@@ -412,7 +413,7 @@ class _DesktopHomePageState extends State<DesktopHomePage>
     final isOutgoingOnly = bind.isOutgoingOnly();
     return Padding(
       padding:
-          const EdgeInsets.only(left: 20.0, right: 16, top: 16.0, bottom: 5),
+          const EdgeInsets.only(left: 20.0, right: 16, top: 16.0, bottom: 18),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -623,31 +624,26 @@ class _DesktopHomePageState extends State<DesktopHomePage>
       children: [
         Container(
           margin: EdgeInsets.fromLTRB(
-              0, marginTop, 0, bind.isIncomingOnly() ? marginTop : 0),
+              14, marginTop, 14, bind.isIncomingOnly() ? marginTop : 0),
           child: Container(
               decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Color(0xFF5E66FF),
-                  Color(0xFF6A69F3),
-                ],
-              )),
-              padding: EdgeInsets.all(20),
+                color: Color(0xFF1A1245),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Color(0x4D5E66FF), width: 1),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 22, vertical: 26),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: (title.isNotEmpty
                           ? <Widget>[
-                              Center(
-                                  child: Text(
+                              Text(
                                 translate(title),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15),
-                              ).marginOnly(bottom: 6)),
+                              ).marginOnly(bottom: 6),
                             ]
                           : <Widget>[]) +
                       <Widget>[
@@ -680,22 +676,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                   ])
                             ]
                           : <Widget>[]) +
-                      (help != null
-                          ? <Widget>[
-                              Center(
-                                  child: InkWell(
-                                      onTap: () async =>
-                                          await launchUrl(Uri.parse(link!)),
-                                      child: Text(
-                                        translate(help),
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: Colors.white,
-                                            fontSize: 12),
-                                      )).marginOnly(top: 6)),
-                            ]
-                          : <Widget>[]))),
+                      // Camprodest: Help links removed app-wide.
+                      <Widget>[])),
         ),
         if (closeButton != null && closeButton == true)
           Positioned(

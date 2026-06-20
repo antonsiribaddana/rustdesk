@@ -31,9 +31,9 @@ class PeerTabModel with ChangeNotifier {
     'Accessible devices',
   ];
   static const List<IconData> icons = [
-    Icons.access_time_filled,
-    Icons.star,
-    Icons.explore,
+    Icons.history_rounded,
+    Icons.star_rounded,
+    Icons.travel_explore_rounded,
     IconFont.addressBook,
     IconFont.deviceGroupFill,
   ];
