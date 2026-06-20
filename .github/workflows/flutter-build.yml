@@ -826,6 +826,25 @@ jobs:
           CREATE_DMG="$(command -v create-dmg)"
           CREATE_DMG="$(readlink -f "$CREATE_DMG")"
           sed -i -e 's/MAXIMUM_UNMOUNTING_ATTEMPTS=3/MAXIMUM_UNMOUNTING_ATTEMPTS=7/' "$CREATE_DMG"
+          # --- Camprodest: fix launch crash on end-user Macs ---
+          # The prebuilt FlutterMacOS.framework ships with a different Team ID than the
+          # ad-hoc-signed main binary, and hardened runtime is left enabled. macOS library
+          # validation then refuses to load the framework ("different Team IDs") and dyld
+          # aborts before any window appears. Re-sign the whole bundle ad-hoc WITHOUT
+          # hardened runtime so all Team IDs are consistent and library validation is off.
+          APP="./flutter/build/macos/Build/Products/Release/Camprodest.app"
+          for fw in "$APP"/Contents/Frameworks/*.framework; do
+            [ -e "$fw" ] && codesign --remove-signature "$fw" 2>/dev/null || true
+            [ -e "$fw" ] && codesign --force --sign - "$fw" || true
+          done
+          for dy in "$APP"/Contents/Frameworks/*.dylib; do
+            [ -e "$dy" ] && codesign --force --sign - "$dy" || true
+          done
+          [ -e "$APP/Contents/MacOS/service" ] && codesign --force --sign - "$APP/Contents/MacOS/service" || true
+          codesign --force --deep --sign - "$APP"
+          echo "== resulting signature (expect adhoc, NO runtime flag) =="
+          codesign -dv "$APP" 2>&1 | grep -iE "flags|Signature" || true
+          # --- end Camprodest fix ---
           create-dmg --icon "Camprodest.app" 200 190 --hide-extension "Camprodest.app" --window-size 800 400 --app-drop-link 600 185 camprodest-${{ env.VERSION }}-${{ matrix.job.arch }}.dmg ./flutter/build/macos/Build/Products/Release/Camprodest.app
 
       - name: Upload unsigned macOS app
