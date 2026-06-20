@@ -260,8 +260,8 @@ class UpdateProgressState extends State<UpdateProgress> {
       value: _isExtracting.isTrue ? null : getValue(),
       minHeight: 20,
       borderRadius: BorderRadius.circular(5),
-      backgroundColor: Colors.grey[300],
-      valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+      backgroundColor: const Color(0x335E66FF),
+      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF5E66FF)),
     );
   }
 }

@@ -595,7 +595,7 @@ class _AddressBookState extends State<AddressBook> {
                                   passwordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color: MyTheme.lightTheme.primaryColor),
+                                  color: MyTheme.accent),
                               onPressed: () {
                                 setState(() {
                                   passwordVisible = !passwordVisible;

@@ -169,10 +169,10 @@ class ColorThemeExtension extends ThemeExtension<ColorThemeExtension> {
   final Color? divider;
 
   static final light = ColorThemeExtension(
-    border: Color(0xFFCCCCCC),
-    border2: Color(0xFFBBBBBB),
+    border: Color(0x335E66FF),
+    border2: Color(0x225E66FF),
     border3: Colors.black26,
-    highlight: Color(0xFFE5E5E5),
+    highlight: Color(0x335E66FF),
     drag_indicator: Colors.grey[800],
     shadow: Colors.black,
     errorBannerBg: Color(0xFFFDEEEB),
@@ -255,13 +255,13 @@ class MyTheme {
   static const Color accent50 = Color(0x775E66FF);
   static const Color accent80 = Color(0xAA5E66FF);
   static const Color canvasColor = Color(0xFF0D0627);
-  static const Color border = Color(0xFFCCCCCC);
+  static const Color border = Color(0x335E66FF);
   static const Color idColor = Color(0xFF6A69F3);
-  static const Color darkGray = Color.fromARGB(255, 148, 148, 148);
+  static const Color darkGray = Color(0xFFB9BCF0);
   static const Color cmIdColor = Color(0xFF21790B);
   static const Color dark = Colors.black87;
   static const Color button = Color(0xFF6A69F3);
-  static const Color hoverBorder = Color(0xFF999999);
+  static const Color hoverBorder = Color(0xFF5E66FF);
 
   // ListTile
   static const ListTileThemeData listTileTheme = ListTileThemeData(
@@ -371,11 +371,11 @@ class MyTheme {
   static ScrollbarThemeData scrollbarThemeDark = scrollbarTheme.copyWith(
     thumbColor: MaterialStateProperty.resolveWith<Color?>((states) {
       if (states.contains(MaterialState.dragged)) {
-        return Colors.grey[100];
+        return const Color(0xFF6A69F3);
       } else if (states.contains(MaterialState.hovered)) {
-        return Colors.grey[300];
+        return const Color(0xAA5E66FF);
       } else {
-        return Colors.grey[500];
+        return const Color(0x665E66FF);
       }
     }),
   );
@@ -384,7 +384,7 @@ class MyTheme {
     // https://stackoverflow.com/questions/77537315/after-upgrading-to-flutter-3-16-the-app-bar-background-color-button-size-and
     useMaterial3: false,
     brightness: Brightness.light,
-    hoverColor: Color.fromARGB(255, 224, 224, 224),
+    hoverColor: Color(0x335E66FF),
     scaffoldBackgroundColor: Colors.white,
     dialogBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
@@ -463,7 +463,7 @@ class MyTheme {
         style:
             MenuStyle(backgroundColor: MaterialStatePropertyAll(Colors.white))),
     colorScheme: ColorScheme.light(
-        primary: Colors.blue, secondary: accent, background: grayBg),
+        primary: accent, secondary: accent, background: grayBg),
     popupMenuTheme: PopupMenuThemeData(
         color: Colors.white,
         shape: RoundedRectangleBorder(
@@ -537,7 +537,7 @@ class MyTheme {
     cardColor: Color(0xFF160C3A),
     visualDensity: VisualDensity.adaptivePlatformDensity,
     tabBarTheme: const TabBarTheme(
-      labelColor: Colors.white70,
+      labelColor: Color(0xFFE8E9F5),
     ),
     tooltipTheme: tooltipTheme(),
     splashColor: (isDesktop || isWebDesktop) ? Colors.transparent : null,
@@ -547,8 +547,8 @@ class MyTheme {
         ? TextButtonThemeData(
             style: TextButton.styleFrom(
               splashFactory: NoSplash.splashFactory,
-              disabledForegroundColor: Colors.white70,
-              foregroundColor: Colors.white70,
+              disabledForegroundColor: Color(0x99B9BCF0),
+              foregroundColor: Color(0xFFB9BCF0),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18.0),
               ),
@@ -559,8 +559,8 @@ class MyTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: MyTheme.accent,
         foregroundColor: Colors.white,
-        disabledForegroundColor: Colors.white70,
-        disabledBackgroundColor: Colors.white10,
+        disabledForegroundColor: Color(0x99B9BCF0),
+        disabledBackgroundColor: Color(0x1A5E66FF),
         minimumSize: const Size(64, 42),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
         alignment: Alignment.center,
@@ -579,7 +579,7 @@ class MyTheme {
       style: OutlinedButton.styleFrom(
         backgroundColor: Color(0x33160C3A),
         side: BorderSide(color: Color(0x335E66FF), width: 1),
-        disabledForegroundColor: Colors.white70,
+        disabledForegroundColor: Color(0x99B9BCF0),
         foregroundColor: Color(0xFFE8E9F5),
         minimumSize: const Size(64, 42),
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
@@ -605,11 +605,11 @@ class MyTheme {
     colorScheme: ColorScheme.dark(
       primary: MyTheme.accent,
       secondary: accent,
-      background: Color(0xFF24252B),
+      background: Color(0xFF0D0627),
     ),
     popupMenuTheme: PopupMenuThemeData(
         shape: RoundedRectangleBorder(
-      side: BorderSide(color: Colors.white24),
+      side: BorderSide(color: Color(0x335E66FF)),
       borderRadius: BorderRadius.all(Radius.circular(8.0)),
     )),
   ).copyWith(
@@ -1209,7 +1209,7 @@ Widget createDialogContent(String text) {
     spans.add(TextSpan(
       text: match.group(0) ?? '',
       style: const TextStyle(
-        color: Colors.blue,
+        color: Color(0xFF5E66FF),
         decoration: TextDecoration.underline,
       ),
       recognizer: TapGestureRecognizer()
@@ -4164,7 +4164,7 @@ Widget workaroundWindowBorder(BuildContext context, Widget child) {
   }
 
   final isLight = Theme.of(context).brightness == Brightness.light;
-  final borderColor = isLight ? Colors.black87 : Colors.grey;
+  final borderColor = isLight ? Colors.black87 : const Color(0x335E66FF);
   final width = isLight ? 0.5 : 0.1;
 
   getBorderWidget(Widget child) {

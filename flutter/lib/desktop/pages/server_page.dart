@@ -1106,7 +1106,7 @@ class _CmControlPanel extends StatelessWidget {
               child: buildButton(
                 context,
                 color: Colors.transparent,
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: const Color(0x335E66FF)),
                 onClick: handleDisconnect,
                 text: 'Cancel',
                 textColor: null,

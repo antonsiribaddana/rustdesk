@@ -116,7 +116,7 @@ class ButtonOP extends StatelessWidget {
               side: BorderSide(
                   color: curOP.value.isEmpty || curOP.value == op
                       ? const Color(0x885E66FF)
-                      : const Color(0x33888888),
+                      : const Color(0x225E66FF),
                   width: 1.5),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),

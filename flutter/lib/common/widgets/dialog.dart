@@ -135,7 +135,7 @@ void changeIdDialog() {
                 labelText: translate('Your new ID'),
                 errorText: msg.isEmpty ? null : translate(msg),
                 suffixText: '${rxId.value.length}/16',
-                suffixStyle: const TextStyle(fontSize: 12, color: Colors.grey)),
+                suffixStyle: const TextStyle(fontSize: 12, color: Color(0x99B9BCF0))),
             inputFormatters: [
               LengthLimitingTextInputFormatter(16),
               // FilteringTextInputFormatter(RegExp(r"[a-zA-z][a-zA-z0-9\_]*"), allow: true)
@@ -1154,10 +1154,10 @@ void showRequestElevationDialog(
     padding: EdgeInsets.fromLTRB(10, 8, 8, 8),
     decoration: BoxDecoration(
       color: MyTheme.currentThemeMode() == ThemeMode.dark
-          ? Color.fromARGB(135, 87, 87, 90)
+          ? const Color(0xFF1A1245)
           : Colors.grey[100],
       borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.grey),
+      border: Border.all(color: const Color(0x335E66FF)),
     ),
     child: Row(
       children: [
@@ -2538,7 +2538,7 @@ void setSharedAbPasswordDialog(String abName, Peer peer) {
                 suffixIcon: IconButton(
                   icon: Icon(
                       passwordVisible ? Icons.visibility : Icons.visibility_off,
-                      color: MyTheme.lightTheme.primaryColor),
+                      color: MyTheme.accent),
                   onPressed: () {
                     setState(() {
                       passwordVisible = !passwordVisible;

@@ -1293,7 +1293,7 @@ class _ActionIconState extends State<ActionIcon> {
           child: widget.onTap == null
               ? Icon(
                   widget.icon,
-                  color: Colors.grey,
+                  color: Color(0x99B9BCF0),
                   size: widget.iconSize,
                 )
               : Obx(
@@ -1457,15 +1457,15 @@ class TabbarTheme extends ThemeExtension<TabbarTheme> {
 
   static const light = TabbarTheme(
       selectedTabIconColor: MyTheme.accent,
-      unSelectedTabIconColor: Color.fromARGB(255, 162, 203, 241),
+      unSelectedTabIconColor: Color(0xFFB9BCF0),
       selectedTextColor: Colors.black,
       unSelectedTextColor: Color.fromARGB(255, 112, 112, 112),
       selectedIconColor: Color.fromARGB(255, 26, 26, 26),
       unSelectedIconColor: Color.fromARGB(255, 96, 96, 96),
       dividerColor: Color.fromARGB(255, 238, 238, 238),
-      hoverColor: Colors.white54,
+      hoverColor: Color(0x1A5E66FF),
       closeHoverColor: Colors.white,
-      selectedTabBackgroundColor: Colors.white54);
+      selectedTabBackgroundColor: Color(0x225E66FF));
 
   static const dark = TabbarTheme(
       selectedTabIconColor: MyTheme.accent,
@@ -1475,9 +1475,9 @@ class TabbarTheme extends ThemeExtension<TabbarTheme> {
       selectedIconColor: MyTheme.accent,
       unSelectedIconColor: Color(0xFF9395C8),
       dividerColor: Color(0xFF2A2150),
-      hoverColor: Colors.black26,
-      closeHoverColor: Colors.black,
-      selectedTabBackgroundColor: Colors.black26);
+      hoverColor: Color(0x335E66FF),
+      closeHoverColor: Color(0xFF1A1245),
+      selectedTabBackgroundColor: Color(0xFF1A1245));
 
   @override
   ThemeExtension<TabbarTheme> copyWith({

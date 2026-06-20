@@ -359,6 +359,9 @@ class _DesktopSettingPageState extends State<DesktopSettingPage>
         width: _kTabWidth,
         height: _kTabHeight,
         child: InkWell(
+          hoverColor: const Color(0x335E66FF),
+          splashColor: const Color(0x335E66FF),
+          highlightColor: const Color(0x1A5E66FF),
           onTap: () {
             if (selectedTab.value != tab.key) {
               int index = DesktopSettingPage.tabKeys.indexOf(tab.key);
@@ -2418,7 +2421,7 @@ class _AboutState extends State<_About> {
                     style: linkStyle,
                   ).marginSymmetric(vertical: 4.0)),
               Container(
-                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
+                decoration: const BoxDecoration(color: Color(0xFF6A69F3)),
                 padding:
                     const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
                 child: SelectionArea(

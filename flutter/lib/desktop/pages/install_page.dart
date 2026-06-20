@@ -170,10 +170,11 @@ class _InstallPageBodyState extends State<_InstallPageBody>
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: isDarkTheme
-                        ? Color.fromARGB(135, 87, 87, 90)
+                        ? Color(0xFF1A1245)
                         : Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey),
+                    border: Border.all(
+                        color: isDarkTheme ? Color(0x335E66FF) : Colors.grey),
                   ),
                   child: Row(
                     children: [
