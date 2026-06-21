@@ -847,6 +847,40 @@ jobs:
           # --- end Camprodest fix ---
           create-dmg --icon "Camprodest.app" 200 190 --hide-extension "Camprodest.app" --window-size 800 400 --app-drop-link 600 185 camprodest-${{ env.VERSION }}-${{ matrix.job.arch }}.dmg ./flutter/build/macos/Build/Products/Release/Camprodest.app
 
+      - name: Smoke-test - launch app on real Mac and screenshot the render
+        if: env.UPLOAD_ARTIFACT == 'true'
+        continue-on-error: true
+        run: |
+          APP="./flutter/build/macos/Build/Products/Release/Camprodest.app"
+          echo "== launching $APP on the runner's GUI session =="
+          open "$APP" || true
+          # let it render its window + auto-connect to camprodest.com
+          sleep 30
+          echo "== foreground GUI processes =="
+          osascript -e 'tell application "System Events" to get name of every process whose background only is false' > /tmp/cp-procs.txt 2>&1 || true
+          cat /tmp/cp-procs.txt || true
+          echo "== capture the whole screen =="
+          screencapture -x /tmp/cp-screenshot.png || true
+          # capture just the Camprodest window if we can resolve its id
+          WID=$(osascript -e 'tell application "System Events" to tell process "Camprodest" to get id of window 1' 2>/dev/null || true)
+          [ -n "$WID" ] && screencapture -x -o -l "$WID" /tmp/cp-window.png 2>/dev/null || true
+          # also pull any crash/console lines from the app
+          log show --predicate 'process == "Camprodest"' --last 1m 2>/dev/null | tail -40 > /tmp/cp-log.txt || true
+          ls -la /tmp/cp-screenshot.png /tmp/cp-window.png 2>/dev/null || true
+
+      - name: Upload smoke-test screenshot
+        if: env.UPLOAD_ARTIFACT == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: camprodest-macos-screenshot-${{ matrix.job.arch }}
+          path: |
+            /tmp/cp-screenshot.png
+            /tmp/cp-window.png
+            /tmp/cp-procs.txt
+            /tmp/cp-log.txt
+          if-no-files-found: ignore
+
       - name: Upload unsigned macOS app
         if: env.UPLOAD_ARTIFACT == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
