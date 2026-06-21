@@ -482,7 +482,7 @@ class MyTheme {
   static ThemeData darkTheme = ThemeData(
     useMaterial3: false,
     brightness: Brightness.dark,
-    hoverColor: Color(0xFF1A1245),
+    hoverColor: Color(0x265E66FF),
     scaffoldBackgroundColor: Color(0xFF0D0627),
     dialogBackgroundColor: Color(0xFF120A33),
     canvasColor: Color(0xFF0D0627),
@@ -570,9 +570,7 @@ class MyTheme {
             fontWeight: FontWeight.w600,
             height: 1.0,
             letterSpacing: 0.2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
+        shape: const StadiumBorder(),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -590,9 +588,7 @@ class MyTheme {
             fontWeight: FontWeight.w600,
             height: 1.0,
             letterSpacing: 0.2),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
+        shape: const StadiumBorder(),
       ),
     ),
     switchTheme: switchTheme(),
@@ -3005,6 +3001,18 @@ class ServerConfig {
         key = options['key'] ?? "";
 }
 
+// Camprodest 1px brand-gradient underline (indigo -> purple -> pink) for fields.
+Widget brandUnderline({double height = 1}) => Container(
+      height: height,
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [Color(0xFF6A69F3), Color(0xFF9B59B6), Color(0xFFE87F9F)],
+        ),
+      ),
+    );
+
 // Camprodest brand gradient button (indigo -> purple -> pink), pill shaped.
 Widget brandGradientButton(String text, VoidCallback? onPressed,
     {double height = 38, double? width, double fontSize = 14}) {
@@ -3021,15 +3029,7 @@ Widget brandGradientButton(String text, VoidCallback? onPressed,
           end: Alignment.centerRight,
           colors: [Color(0xFF6A69F3), Color(0xFF9B59B6), Color(0xFFE87F9F)],
         ),
-        boxShadow: enabled
-            ? [
-                BoxShadow(
-                  color: const Color(0xFF6A69F3).withOpacity(0.35),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ]
-            : null,
+        // Camprodest: no glow — flat gradient button.
       ),
       child: Material(
         color: Colors.transparent,

@@ -643,7 +643,7 @@ class _DesktopTabState extends State<DesktopTab>
                             child: const Text(
                               "Camprodest Connect",
                               style: TextStyle(fontSize: 13),
-                            ).marginOnly(left: 2))
+                            ).marginOnly(left: 8))
                       ]).marginOnly(
                         left: 5,
                         right: 10,

@@ -303,7 +303,17 @@ class _PeerCardState extends State<_PeerCard>
               children: [
                 Expanded(
                   child: Container(
-                    color: str2color('${peer.id}${peer.platform}', 0x7f),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFF6A69F3),
+                          Color(0xFF9B59B6),
+                          Color(0xFFE87F9F),
+                        ],
+                      ),
+                    ),
                     child: Row(
                       children: [
                         Expanded(

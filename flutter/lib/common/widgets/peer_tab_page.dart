@@ -697,8 +697,14 @@ class _PeerSearchBarState extends State<PeerSearchBar> {
     return Obx(() => Container(
           width: stateGlobal.isPortrait.isTrue ? 120 : 140,
           decoration: BoxDecoration(
-            color: const Color(0xFF1A1245),
-            borderRadius: BorderRadius.circular(6),
+            border: Border(
+              bottom: BorderSide(
+                color: focused.value
+                    ? const Color(0xFF5E66FF)
+                    : const Color(0x335E66FF),
+                width: focused.value ? 1.5 : 1,
+              ),
+            ),
           ),
           child: Row(
             children: [
@@ -728,6 +734,7 @@ class _PeerSearchBarState extends State<PeerSearchBar> {
                         cursorWidth: 1,
                         style: const TextStyle(fontSize: 14),
                         decoration: InputDecoration(
+                          filled: false,
                           contentPadding:
                               const EdgeInsets.symmetric(vertical: 6),
                           hintText:
