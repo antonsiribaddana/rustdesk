@@ -47,6 +47,38 @@ class UserModel {
     });
   }
 
+  // Camprodest: silent auto-login using credentials baked into the build
+  // (preset-user-name + preset-login-password). Runs on launch when there is
+  // no stored session, so the rolled-out PC signs in with no user interaction
+  // and immediately pulls the shared address book.
+  Future<bool> autoLoginPreset() async {
+    if (bind.isDisableAccount()) return false;
+    if (bind.mainGetLocalOption(key: 'access_token') != '') return false;
+    final presetUser = bind.mainGetBuildinOption(key: 'preset-user-name');
+    final presetPass = bind.mainGetBuildinOption(key: 'preset-login-password');
+    if (presetUser.isEmpty || presetPass.isEmpty) return false;
+    try {
+      final resp = await login(LoginRequest(
+          username: presetUser,
+          password: presetPass,
+          id: await bind.mainGetMyId(),
+          uuid: await bind.mainGetUuid(),
+          autoLogin: true,
+          type: HttpType.kAuthReqTypeAccount));
+      if (resp.type == HttpType.kAuthResTypeToken &&
+          resp.access_token != null) {
+        await bind.mainSetLocalOption(
+            key: 'access_token', value: resp.access_token!);
+        await bind.mainSetLocalOption(
+            key: 'user_info', value: jsonEncode(resp.user ?? {}));
+        return true;
+      }
+    } catch (e) {
+      debugPrint('autoLoginPreset failed: $e');
+    }
+    return false;
+  }
+
   void refreshCurrentUser() async {
     if (bind.isDisableAccount()) return;
     networkError.value = '';

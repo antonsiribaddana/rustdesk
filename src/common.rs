@@ -2085,6 +2085,42 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
     ThrottledInterval::new(i)
 }
 
+// Camprodest: load a plain (unsigned) `account.txt` placed next to the
+// executable. Line 1 = operator username, line 2 = password. These seed the
+// baked-login options so each rolled-out PC silently signs into its own
+// operator account. Lets us ship ONE build + a per-PC creds file instead of
+// 15 separate builds (custom.txt requires RustDesk's private signing key).
+pub fn load_preset_account() {
+    let read = || -> Option<String> {
+        #[cfg(debug_assertions)]
+        if let Ok(d) = std::fs::read_to_string("./account.txt") {
+            return Some(d);
+        }
+        let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
+        #[cfg(target_os = "macos")]
+        let dir = dir.join("../Resources");
+        std::fs::read_to_string(dir.join("account.txt")).ok()
+    };
+    let Some(data) = read() else {
+        return;
+    };
+    let mut lines = data.lines();
+    let user = lines.next().unwrap_or("").trim().to_string();
+    let pass = lines.next().unwrap_or("").trim().to_string();
+    if user.is_empty() || pass.is_empty() {
+        return;
+    }
+    let mut buildin = config::BUILTIN_SETTINGS.write().unwrap();
+    buildin.insert(
+        config::keys::OPTION_PRESET_USERNAME.to_string(),
+        user,
+    );
+    buildin.insert(
+        config::keys::OPTION_PRESET_LOGIN_PASSWORD.to_string(),
+        pass,
+    );
+}
+
 pub fn load_custom_client() {
     #[cfg(debug_assertions)]
     if let Ok(data) = std::fs::read_to_string("./custom.txt") {

@@ -152,6 +152,8 @@ void runMainApp(bool startService) async {
     bind.pluginListReload();
   }
   await Future.wait([gFFI.abModel.loadCache(), gFFI.groupModel.loadCache()]);
+  // Camprodest: silent auto-login with baked operator credentials, then refresh.
+  await gFFI.userModel.autoLoginPreset();
   gFFI.userModel.refreshCurrentUser();
   runApp(App());
 
@@ -192,6 +194,8 @@ void runMobileApp() async {
   if (isAndroid) platformFFI.syncAndroidServiceAppDirConfigPath();
   draggablePositions.load();
   await Future.wait([gFFI.abModel.loadCache(), gFFI.groupModel.loadCache()]);
+  // Camprodest: silent auto-login with baked operator credentials, then refresh.
+  await gFFI.userModel.autoLoginPreset();
   gFFI.userModel.refreshCurrentUser();
   runApp(App());
   await initUniLinks();
