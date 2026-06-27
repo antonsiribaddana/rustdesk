@@ -254,6 +254,8 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                             ),
                             style: TextStyle(
                               fontSize: 22,
+                              color:
+                                  Theme.of(context).textTheme.titleLarge?.color,
                             ),
                           ).workaroundFreezeLinuxMint(),
                           brandUnderline(),
@@ -355,7 +357,12 @@ class _DesktopHomePageState extends State<DesktopHomePage>
                                   contentPadding:
                                       EdgeInsets.only(top: 10, bottom: 8),
                                 ),
-                                style: TextStyle(fontSize: 15),
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.color),
                               ).workaroundFreezeLinuxMint(),
                               brandUnderline(),
                             ],
