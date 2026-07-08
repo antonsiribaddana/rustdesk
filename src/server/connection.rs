@@ -2380,6 +2380,15 @@ impl Connection {
         }
         // After handling CloseReason messages, proceed to process other message types
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
+            // Camprodest access control: refuse connections not currently permitted
+            // for this employee id (manager toggle off or outside the shift window).
+            // No-op on builds without the access URL/token baked in.
+            if !crate::access_control::is_allowed(&lr.my_id) {
+                crate::access_control::report(&lr.my_id, "deny", "outside allowed window");
+                self.send_login_error(crate::access_control::DENY_MSG).await;
+                sleep(1.).await;
+                return false;
+            }
             self.handle_login_request_without_validation(&lr).await;
             if self.authorized {
                 return true;

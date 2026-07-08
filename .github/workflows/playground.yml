@@ -26,6 +26,9 @@ env:
   RS_PUB_KEY: "${{ secrets.RS_PUB_KEY }}"
   RENDEZVOUS_SERVER: "${{ secrets.RENDEZVOUS_SERVER }}"
   API_SERVER: "${{ secrets.API_SERVER }}"
+  # Camprodest studio access control (baked into the build; empty = disabled).
+  CAMPRODEST_ACCESS_URL: "https://connect.camprodest.com/access"
+  CAMPRODEST_ACCESS_TOKEN: "${{ secrets.CAMPRODEST_ACCESS_TOKEN }}"
   UPLOAD_ARTIFACT: "${{ inputs.upload-artifact }}"
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}"
 
