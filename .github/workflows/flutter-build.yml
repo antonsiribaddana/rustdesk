@@ -1634,6 +1634,10 @@ jobs:
               export JOBS=""
             fi
             echo $JOBS
+            # Camprodest access control baked into the container build (run-on-arch
+            # doesn't inherit the workflow env, so export them into the build here).
+            export CAMPRODEST_ACCESS_URL="https://connect.camprodest.com/access"
+            export CAMPRODEST_ACCESS_TOKEN="${{ secrets.CAMPRODEST_ACCESS_TOKEN }}"
             cargo build --locked --lib $JOBS --features hwcodec,flutter,unix-file-copy-paste --release
             rm -rf target/release/deps target/release/build
             rm -rf ~/.cargo
