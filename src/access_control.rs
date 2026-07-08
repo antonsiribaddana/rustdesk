@@ -8,7 +8,7 @@
 // It is a no-op unless CAMPRODEST_ACCESS_URL + CAMPRODEST_ACCESS_TOKEN are baked
 // in at build time, so upstream / non-Camprodest builds are completely unaffected.
 
-use hbb_common::{config::Config, lazy_static, log};
+use hbb_common::{config::Config, lazy_static, log, tokio};
 use std::{
     collections::HashSet,
     sync::RwLock,
