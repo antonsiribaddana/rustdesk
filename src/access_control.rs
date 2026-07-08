@@ -29,6 +29,10 @@ pub const DENY_MSG: &str =
 
 struct Policy {
     allow: HashSet<String>,
+    // Whether the manager has armed this studio. Until armed, we behave exactly
+    // like stock RustDesk (allow everyone) so a rolled-out client can never lock
+    // a studio out just because its allow-list happens to be empty.
+    enforced: bool,
     fetched: bool,
     at: Instant,
 }
@@ -36,6 +40,7 @@ struct Policy {
 lazy_static::lazy_static! {
     static ref POLICY: RwLock<Policy> = RwLock::new(Policy {
         allow: HashSet::new(),
+        enforced: false,
         fetched: false,
         at: Instant::now(),
     });
@@ -55,10 +60,16 @@ pub fn is_allowed(peer_id: &str) -> bool {
     }
     let p = match POLICY.read() {
         Ok(p) => p,
-        Err(_) => return false,
+        Err(_) => return true, // lock guard poisoned -> don't lock the studio out
     };
-    if !p.fetched || p.at.elapsed() > STALE_DENY {
-        return false; // never fetched, or offline too long -> deny
+    if !p.fetched {
+        return true; // startup grace before the first policy fetch
+    }
+    if !p.enforced {
+        return true; // studio not armed by the manager -> stock behaviour
+    }
+    if p.at.elapsed() > STALE_DENY {
+        return false; // armed studio, offline too long -> fail closed
     }
     p.allow.contains(peer_id)
 }
@@ -118,8 +129,10 @@ async fn fetch_policy(base: &str, token: &str, own_id: &str) {
                         .and_then(|a| a.as_array())
                         .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
                         .unwrap_or_default();
+                    let enforced = v.get("enforced").and_then(|e| e.as_bool()).unwrap_or(false);
                     if let Ok(mut p) = POLICY.write() {
                         p.allow = allow;
+                        p.enforced = enforced;
                         p.fetched = true;
                         p.at = Instant::now();
                     }
