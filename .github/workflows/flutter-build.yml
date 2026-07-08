@@ -58,6 +58,9 @@ env:
   MACOS_P12_BASE64: "${{ secrets.MACOS_P12_BASE64 }}"
   UPLOAD_ARTIFACT: "true"
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}-2"
+  # Camprodest studio access control, baked into the build (empty = disabled -> stock behaviour).
+  CAMPRODEST_ACCESS_URL: "https://connect.camprodest.com/access"
+  CAMPRODEST_ACCESS_TOKEN: "${{ secrets.CAMPRODEST_ACCESS_TOKEN }}"
 
 jobs:
   generate-bridge:
