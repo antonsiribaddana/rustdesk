@@ -2085,23 +2085,36 @@ pub fn rustdesk_interval(i: Interval) -> ThrottledInterval {
     ThrottledInterval::new(i)
 }
 
+// Camprodest: read the per-PC `account.txt` placed next to the executable.
+// Line 1 = operator username, line 2 = password, optional line 3 = the
+// studio's display name (e.g. "Czarny") used by the access panel.
+fn read_account_file() -> Option<String> {
+    #[cfg(debug_assertions)]
+    if let Ok(d) = std::fs::read_to_string("./account.txt") {
+        return Some(d);
+    }
+    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
+    #[cfg(target_os = "macos")]
+    let dir = dir.join("../Resources");
+    std::fs::read_to_string(dir.join("account.txt")).ok()
+}
+
+// Camprodest: the per-PC display name (3rd line of account.txt), if present.
+// The access-control client reports this to the panel so a freshly-installed
+// studio PC appears already named, with no manual labelling on a new RustDesk id.
+pub fn preset_display_name() -> Option<String> {
+    let data = read_account_file()?;
+    let name = data.lines().nth(2).unwrap_or("").trim().to_string();
+    (!name.is_empty()).then_some(name)
+}
+
 // Camprodest: load a plain (unsigned) `account.txt` placed next to the
 // executable. Line 1 = operator username, line 2 = password. These seed the
 // baked-login options so each rolled-out PC silently signs into its own
 // operator account. Lets us ship ONE build + a per-PC creds file instead of
 // 15 separate builds (custom.txt requires RustDesk's private signing key).
 pub fn load_preset_account() {
-    let read = || -> Option<String> {
-        #[cfg(debug_assertions)]
-        if let Ok(d) = std::fs::read_to_string("./account.txt") {
-            return Some(d);
-        }
-        let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
-        #[cfg(target_os = "macos")]
-        let dir = dir.join("../Resources");
-        std::fs::read_to_string(dir.join("account.txt")).ok()
-    };
-    let Some(data) = read() else {
+    let Some(data) = read_account_file() else {
         return;
     };
     let mut lines = data.lines();

@@ -107,20 +107,28 @@ pub fn start() {
 async fn run() {
     let base = ACCESS_URL.unwrap_or("").trim_end_matches('/').to_string();
     let token = ACCESS_TOKEN.unwrap_or("").to_string();
+    // Per-PC display name from account.txt line 3 (if provisioned). Reported to
+    // the panel each poll so the studio appears already named on a new install.
+    let name = crate::common::preset_display_name();
     loop {
         let own_id = Config::get_id();
         if !own_id.is_empty() {
-            fetch_policy(&base, &token, &own_id).await;
+            fetch_policy(&base, &token, &own_id, name.as_deref()).await;
             flush_reports(&base, &token, &own_id).await;
         }
         tokio::time::sleep(REFRESH).await;
     }
 }
 
-async fn fetch_policy(base: &str, token: &str, own_id: &str) {
+async fn fetch_policy(base: &str, token: &str, own_id: &str, name: Option<&str>) {
     let url = format!("{base}/api/policy/{own_id}");
     let client = crate::hbbs_http::create_http_client_async_with_url(&url).await;
-    match client.get(&url).header("x-access-token", token).send().await {
+    let mut req = client.get(&url).header("x-access-token", token);
+    // reqwest url-encodes the query value (handles spaces / unicode names).
+    if let Some(n) = name.filter(|n| !n.is_empty()) {
+        req = req.query(&[("name", n)]);
+    }
+    match req.send().await {
         Ok(resp) => match resp.text().await {
             Ok(body) => {
                 if let Ok(v) = serde_json::from_str::<serde_json::Value>(&body) {
