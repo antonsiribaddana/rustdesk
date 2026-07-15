@@ -417,10 +417,14 @@ class _ConnectionPageState extends State<ConnectionPage>
                           enableSuggestions: false,
                           keyboardType: TextInputType.visiblePassword,
                           focusNode: fieldFocusNode,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'WorkSans',
                             fontSize: 22,
                             height: 1.4,
+                            // Pin to the themed title color (same as cursorColor
+                            // below) so the typed remote ID isn't black on the
+                            // dark field on Windows. Matches the desktop_home_page fix.
+                            color: Theme.of(context).textTheme.titleLarge?.color,
                           ),
                           maxLines: 1,
                           cursorColor:
