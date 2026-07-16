@@ -107,9 +107,14 @@ pub fn start() {
 async fn run() {
     let base = ACCESS_URL.unwrap_or("").trim_end_matches('/').to_string();
     let token = ACCESS_TOKEN.unwrap_or("").to_string();
-    // Per-PC display name from account.txt line 3 (if provisioned). Reported to
-    // the panel each poll so the studio appears already named on a new install.
-    let name = crate::common::preset_display_name();
+    // The display name reported to the panel (account.txt name → operator user →
+    // hostname). Only reported when the app is actually INSTALLED, so CI builds,
+    // portable/dev runs and test machines never register themselves as studios.
+    let name = if crate::platform::is_installed() {
+        crate::common::preset_display_name()
+    } else {
+        None
+    };
     loop {
         let own_id = Config::get_id();
         if !own_id.is_empty() {

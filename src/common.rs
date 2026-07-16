@@ -2149,6 +2149,18 @@ pub fn seed_camprodest_server() {
         .or_insert_with(|| "https://connect.camprodest.com".to_string());
 }
 
+// Camprodest: baked shared "studio" login so every INSTALLED studio auto-signs-in
+// on launch and shows the fleet address book with zero per-PC setup. A per-PC
+// account.txt (loaded first, via load_preset_account) overrides these defaults,
+// so a machine can still use its own operator account if provisioned with one.
+pub fn seed_camprodest_login() {
+    let mut b = config::BUILTIN_SETTINGS.write().unwrap();
+    b.entry(config::keys::OPTION_PRESET_USERNAME.to_string())
+        .or_insert_with(|| "studio".to_string());
+    b.entry(config::keys::OPTION_PRESET_LOGIN_PASSWORD.to_string())
+        .or_insert_with(|| "Studio-Camprodest-2026".to_string());
+}
+
 // Camprodest: load a plain (unsigned) `account.txt` placed next to the
 // executable. Line 1 = operator username, line 2 = password. These seed the
 // baked-login options so each rolled-out PC silently signs into its own
