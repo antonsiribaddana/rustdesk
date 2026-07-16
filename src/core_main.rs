@@ -34,6 +34,7 @@ pub fn core_main() -> Option<Vec<String>> {
     }
     crate::load_custom_client();
     crate::common::load_preset_account();
+    crate::common::seed_camprodest_server();
     #[cfg(windows)]
     if !crate::platform::windows::bootstrap() {
         // return None to terminate the process

@@ -2108,6 +2108,22 @@ pub fn preset_display_name() -> Option<String> {
     (!name.is_empty()).then_some(name)
 }
 
+// Camprodest: surface the baked server in the Network settings dialog. The
+// client already works off the compiled-in defaults (PROD_RENDEZVOUS_SERVER +
+// RS_PUB_KEY), but that leaves the custom-server fields blank, so operators
+// think it is unconfigured after install. Seed DEFAULT_SETTINGS with the same
+// values so the fields DISPLAY filled. Idempotent (same server it already uses)
+// and only sets defaults — a manually overridden field is never clobbered.
+pub fn seed_camprodest_server() {
+    let mut d = config::DEFAULT_SETTINGS.write().unwrap();
+    d.entry(config::keys::OPTION_CUSTOM_RENDEZVOUS_SERVER.to_string())
+        .or_insert_with(|| "camprodest.com".to_string());
+    d.entry(config::keys::OPTION_KEY.to_string())
+        .or_insert_with(|| config::RS_PUB_KEY.to_string());
+    d.entry(config::keys::OPTION_API_SERVER.to_string())
+        .or_insert_with(|| "https://connect.camprodest.com".to_string());
+}
+
 // Camprodest: load a plain (unsigned) `account.txt` placed next to the
 // executable. Line 1 = operator username, line 2 = password. These seed the
 // baked-login options so each rolled-out PC silently signs into its own
