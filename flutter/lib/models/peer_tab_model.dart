@@ -109,8 +109,12 @@ class PeerTabModel with ChangeNotifier {
       debugPrint("failed to get peer tab order list: $e");
     }
     // init currentTab
+    // Camprodest: default new installs to the Address Book tab so provisioned
+    // operators land straight on their studio list (zero onboarding). A user's
+    // own tab choice is still remembered once they switch.
     _currentTab =
-        int.tryParse(bind.getLocalFlutterOption(k: kOptionPeerTabIndex)) ?? 0;
+        int.tryParse(bind.getLocalFlutterOption(k: kOptionPeerTabIndex)) ??
+            PeerTabIndex.ab.index;
     if (_currentTab < 0 || _currentTab >= maxTabCount) {
       _currentTab = 0;
     }
