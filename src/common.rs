@@ -2099,13 +2099,25 @@ fn read_account_file() -> Option<String> {
     std::fs::read_to_string(dir.join("account.txt")).ok()
 }
 
-// Camprodest: the per-PC display name (3rd line of account.txt), if present.
-// The access-control client reports this to the panel so a freshly-installed
-// studio PC appears already named, with no manual labelling on a new RustDesk id.
+// Camprodest: the display name a provisioned studio reports to the access panel
+// so it auto-appears as a named studio with no manual step. Uses account.txt
+// line 3 (the assigned name, e.g. "Czarny") when present, otherwise falls back
+// to line 1 (the operator username, e.g. "cam01") so EVERY machine with an
+// operator login self-registers automatically. Returns None only when there is
+// no account.txt at all (i.e. an unprovisioned / employee machine), which is
+// what keeps employee PCs from auto-classifying as studios.
 pub fn preset_display_name() -> Option<String> {
     let data = read_account_file()?;
-    let name = data.lines().nth(2).unwrap_or("").trim().to_string();
-    (!name.is_empty()).then_some(name)
+    let mut lines = data.lines();
+    let user = lines.next().unwrap_or("").trim().to_string();
+    let name = lines.nth(1).unwrap_or("").trim().to_string(); // line 3
+    if !name.is_empty() {
+        Some(name)
+    } else if !user.is_empty() {
+        Some(user)
+    } else {
+        None
+    }
 }
 
 // Camprodest: surface the baked server in the Network settings dialog. The
