@@ -32,7 +32,6 @@ use crate::{
     common::input::{MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_TYPE_DOWN, MOUSE_TYPE_UP},
     create_symmetric_key_msg, decode_id_pk, get_rs_pk, is_keyboard_mode_supported,
     kcp_stream::KcpStream,
-    secure_tcp,
     ui_interface::{get_builtin_option, resolve_avatar_url, use_texture_render},
     ui_session_interface::{InvokeUiSession, Session},
 };
@@ -426,12 +425,13 @@ impl Client {
             NatType::from_i32(my_nat_type).unwrap_or(NatType::UNKNOWN_NAT)
         };
 
-        if !key.is_empty() && !token.is_empty() {
-            // mainly for the security of token
-            secure_tcp(&mut socket, &key)
-                .await
-                .map_err(|e| anyhow!("Failed to secure tcp: {}", e))?;
-        } else if let Some(udp) = udp.1.as_ref() {
+        // Camprodest: our self-hosted (open-source) rendezvous server does NOT initiate the
+        // KeyExchange that secure_tcp() waits for — only the paid rustdesk-server-pro does.
+        // Because every studio auto-logs into the shared account, `token` is non-empty, so the
+        // original code took the secure_tcp() branch and hung the full READ_TIMEOUT (18s),
+        // failing with "Failed to secure tcp: deadline has elapsed". Skip that handshake and use
+        // the normal (not-logged-in) path; the token is still sent in the punch-hole request below.
+        if let Some(udp) = udp.1.as_ref() {
             let tm = Instant::now();
             loop {
                 let port = *udp.lock().unwrap();
@@ -855,10 +855,9 @@ impl Client {
                 .await
                 .with_context(|| "Failed to connect to rendezvous server")?;
 
-            if !key.is_empty() && !token.is_empty() {
-                // mainly for the security of token
-                secure_tcp(&mut socket, key).await?;
-            }
+            // Camprodest: skip the token-secure handshake here too (relay-request path) — our
+            // OSS rendezvous never answers it, so a logged-in client would hang 18s and fail.
+            // See the matching note in _start_inner(). Token is still sent in the request below.
 
             ipv4 = socket.local_addr().is_ipv4();
             let mut msg_out = RendezvousMessage::new();
