@@ -2147,6 +2147,12 @@ pub fn seed_camprodest_server() {
         .or_insert_with(|| config::RS_PUB_KEY.to_string());
     d.entry(config::keys::OPTION_API_SERVER.to_string())
         .or_insert_with(|| "https://connect.camprodest.com".to_string());
+    // Camprodest: turn on silent auto-update by default so every future build rolls
+    // out to installed studios with zero touch (the built-in updater in updater.rs
+    // checks daily, waits for no active session, downloads, and installs via --update).
+    // "allow-" options are opt-in ("Y"); a manual override is still respected.
+    d.entry(config::keys::OPTION_ALLOW_AUTO_UPDATE.to_string())
+        .or_insert_with(|| "Y".to_string());
 }
 
 // Camprodest: baked shared "studio" login so every INSTALLED studio auto-signs-in

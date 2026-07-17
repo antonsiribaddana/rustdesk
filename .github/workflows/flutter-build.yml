@@ -41,7 +41,11 @@ env:
   FLUTTER_WINDOWS_ARM_VERSION: "3.44.0"
   # for arm64 linux because official Dart SDK does not work
   FLUTTER_ELINUX_VERSION: "3.16.9"
-  TAG_NAME: "${{ inputs.upload-tag || 'camprodest' }}"
+  # Camprodest: each build gets a unique, strictly-increasing version (1.4.8-<run#>)
+  # and is published under a matching per-version release tag, so the silent
+  # auto-updater's download URL (.../releases/download/1.4.8-<run#>/camprodest-...exe)
+  # resolves and the version comparison always sees a newer build.
+  TAG_NAME: "${{ inputs.upload-tag || format('1.4.8-{0}', github.run_number) }}"
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
   # vcpkg version: 2025.08.27
   # If we change the `VCPKG COMMIT_ID`, please remember:
@@ -51,7 +55,10 @@ env:
   # 2. Update the `VCPKG_COMMIT_ID` in `ci.yml` and `playground.yml`.
   VCPKG_COMMIT_ID: "120deac3062162151622ca4860575a33844ba10b"
   ARMV7_VCPKG_COMMIT_ID: "6f29f12e82a8293156836ad81cc9bf5af41fe836" # 2025.01.13, got "/opt/artifacts/vcpkg/vcpkg: No such file or directory" with latest version
-  VERSION: "1.4.8"
+  VERSION: "1.4.8-${{ github.run_number }}"
+  # Compile-time stamp read by src/version.rs so crate::VERSION == the release version,
+  # which is what updater.rs compares against the endpoint. Keep in sync with VERSION.
+  CAMPRODEST_VERSION: "1.4.8-${{ github.run_number }}"
   NDK_VERSION: "r28c"
   #signing keys env variable checks
   ANDROID_SIGNING_KEY: "${{ secrets.ANDROID_SIGNING_KEY }}"
