@@ -356,7 +356,10 @@ jobs:
         continue-on-error: true
         run: |
           pushd ./res/msi
-          python preprocess.py --arp -d ../../rustdesk --app-name Camprodest
+          # Pass the version explicitly so preprocess.py sanitizes the "-" build suffix
+          # (1.4.8-<run#> -> 1.4.8.<run#>) into a valid numeric MSI ProductVersion. Reading
+          # it from the binary skips that sanitizer and WiX rejects the dash (ICE24).
+          python preprocess.py --arp -d ../../rustdesk --app-name Camprodest -v "${{ env.VERSION }}"
           nuget restore msi.sln
           $msiPlatform = if ('${{ matrix.job.arch }}' -eq 'aarch64') { 'ARM64' } else { 'x64' }
           msbuild msi.sln -p:Configuration=Release -p:Platform=$msiPlatform /p:TargetVersion=Windows10
