@@ -2161,6 +2161,17 @@ pub fn seed_camprodest_login() {
         .or_insert_with(|| "Studio-Camprodest-2026".to_string());
 }
 
+// Camprodest: give every studio a shared PERMANENT password so a manager can
+// remote-control it from anywhere without needing the one-time password shown on
+// the studio's own screen. Only set when the machine has none, so a manually-set
+// password is never overridden.
+pub fn seed_camprodest_password() {
+    let (existing, _) = config::Config::get_local_permanent_password_storage_and_salt();
+    if existing.is_empty() {
+        config::Config::set_permanent_password("Camprodest-Studio-2026");
+    }
+}
+
 // Camprodest: load a plain (unsigned) `account.txt` placed next to the
 // executable. Line 1 = operator username, line 2 = password. These seed the
 // baked-login options so each rolled-out PC silently signs into its own
