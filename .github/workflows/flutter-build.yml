@@ -7,6 +7,10 @@ on:
         description: "Build isolated access-test client artifacts without publishing"
         type: boolean
         default: false
+      candidate_macos_only:
+        description: "With candidate enabled, build only macOS test artifacts"
+        type: boolean
+        default: false
   push:
     tags:
       - "camprodest-*"
@@ -80,6 +84,7 @@ jobs:
     uses: ./.github/workflows/bridge.yml
 
   build-RustDeskTempTopMostWindow:
+    if: ${{ !inputs.candidate_macos_only }}
     uses: ./.github/workflows/third-party-RustDeskTempTopMostWindow.yml
     strategy:
       fail-fast: false
@@ -97,6 +102,7 @@ jobs:
       target_version: Windows10
 
   build-for-windows-flutter:
+    if: ${{ !inputs.candidate_macos_only }}
     name: ${{ matrix.job.target }}
     needs: [build-RustDeskTempTopMostWindow, generate-bridge]
     runs-on: ${{ matrix.job.os }}
@@ -671,7 +677,7 @@ jobs:
 
 
   build-for-macOS:
-    if: ${{ !inputs.candidate }}
+    if: ${{ !inputs.candidate || inputs.candidate_macos_only }}
     name: ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     needs: [generate-bridge]
@@ -927,7 +933,7 @@ jobs:
           rcodesign notary-submit --api-key-path ${{ github.workspace }}/rustdesk.json  --staple rustdesk-${{ env.VERSION }}.dmg
 
       - name: Publish DMG package
-        if: env.UPLOAD_ARTIFACT == 'true'
+        if: env.UPLOAD_ARTIFACT == 'true' && !inputs.candidate
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
         continue-on-error: true
         with:
