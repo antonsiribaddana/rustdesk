@@ -2,6 +2,11 @@ name: Build the flutter version of the RustDesk
 
 on:
   workflow_dispatch:
+    inputs:
+      candidate:
+        description: "Build isolated access-test client artifacts without publishing"
+        type: boolean
+        default: false
   push:
     tags:
       - "camprodest-*"
@@ -66,7 +71,8 @@ env:
   UPLOAD_ARTIFACT: "true"
   SIGN_BASE_URL: "${{ secrets.SIGN_BASE_URL }}-2"
   # Camprodest studio access control, baked into the build (empty = disabled -> stock behaviour).
-  CAMPRODEST_ACCESS_URL: "https://connect.camprodest.com/access"
+  CAMPRODEST_ACCESS_URL: "${{ inputs.candidate && 'https://connect.camprodest.com/access-test' || 'https://connect.camprodest.com/access' }}"
+  CAMPRODEST_ACCESS_CANDIDATE: "${{ inputs.candidate && '1' || '' }}"
   CAMPRODEST_ACCESS_TOKEN: "${{ secrets.CAMPRODEST_ACCESS_TOKEN }}"
 
 jobs:
@@ -382,7 +388,7 @@ jobs:
 
       - name: Publish Release
         uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
-        if: env.UPLOAD_ARTIFACT == 'true'
+        if: env.UPLOAD_ARTIFACT == 'true' && !inputs.candidate
         continue-on-error: true
         with:
           prerelease: true
@@ -665,6 +671,7 @@ jobs:
 
 
   build-for-macOS:
+    if: ${{ !inputs.candidate }}
     name: ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.os }}
     needs: [generate-bridge]
@@ -1450,7 +1457,7 @@ jobs:
             signed-apk/rustdesk-${{ env.VERSION }}-universal${{ env.suffix }}.apk
 
   build-rustdesk-linux:
-    if: true  # camprodest: enabled for Linux enforcement testing (x86_64 only)
+    if: ${{ !inputs.candidate }}  # production Linux build only
     needs: [generate-bridge]
     name: build rustdesk linux ${{ matrix.job.target }}
     runs-on: ${{ matrix.job.on }}

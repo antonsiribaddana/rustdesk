@@ -113,7 +113,10 @@ impl RendezvousMediator {
         crate::hbbs_http::sync::start();
         crate::access_control::start();
         #[cfg(target_os = "windows")]
-        if crate::platform::is_installed() && crate::is_server() {
+        if option_env!("CAMPRODEST_ACCESS_CANDIDATE") != Some("1")
+            && crate::platform::is_installed()
+            && crate::is_server()
+        {
             crate::updater::start_auto_update();
         }
         check_zombie();

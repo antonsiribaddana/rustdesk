@@ -134,25 +134,29 @@ async fn fetch_policy(base: &str, token: &str, own_id: &str, name: Option<&str>)
         req = req.query(&[("name", n)]);
     }
     match req.send().await {
-        Ok(resp) => match resp.text().await {
+        Ok(resp) if resp.status().is_success() => match resp.text().await {
             Ok(body) => {
                 if let Ok(v) = serde_json::from_str::<serde_json::Value>(&body) {
-                    let allow: HashSet<String> = v
-                        .get("allow")
-                        .and_then(|a| a.as_array())
-                        .map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect())
-                        .unwrap_or_default();
-                    let enforced = v.get("enforced").and_then(|e| e.as_bool()).unwrap_or(false);
-                    if let Ok(mut p) = POLICY.write() {
-                        p.allow = allow;
-                        p.enforced = enforced;
-                        p.fetched = true;
-                        p.at = Instant::now();
+                    if let (Some(entries), Some(enforced)) = (
+                        v.get("allow").and_then(|a| a.as_array()),
+                        v.get("enforced").and_then(|e| e.as_bool()),
+                    ) {
+                        let allow: HashSet<String> = entries
+                            .iter()
+                            .filter_map(|x| x.as_str().map(|s| s.to_string()))
+                            .collect();
+                        if let Ok(mut p) = POLICY.write() {
+                            p.allow = allow;
+                            p.enforced = enforced;
+                            p.fetched = true;
+                            p.at = Instant::now();
+                        }
                     }
                 }
             }
             Err(e) => log::debug!("access_control: read policy failed: {e}"),
         },
+        Ok(resp) => log::debug!("access_control: policy HTTP {}", resp.status()),
         Err(e) => log::debug!("access_control: fetch policy failed: {e}"),
     }
 }
