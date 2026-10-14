@@ -3477,6 +3477,25 @@ pub async fn handle_hash(
     peer: &mut Stream,
 ) {
     lc.write().unwrap().hash = hash.clone();
+    if crate::scheduled_access::enabled() && lc.read().unwrap().other_server.is_none() {
+        let (target, session_id) = { let config = lc.read().unwrap(); (config.id.clone(), config.session_id) };
+        match crate::scheduled_access::request(&target, &hash, session_id).await {
+            Ok(grant) => {
+                let mut message = lc.read().unwrap().create_login_msg(String::new(), String::new(), vec![]);
+                if let Some(message::Union::LoginRequest(ref mut lr)) = message.union {
+                    crate::scheduled_access::attach(lr, grant);
+                }
+                allow_err!(peer.send(&message).await);
+            }
+            Err(reason) => {
+                interface.msgbox("error", "Connection not permitted", reason, "");
+                let mut misc = Misc::new(); misc.set_close_reason(reason.to_owned());
+                let mut message = Message::new(); message.set_misc(misc);
+                allow_err!(peer.send(&message).await);
+            }
+        }
+        return;
+    }
     // Take care of password application order
 
     // switch_uuid

@@ -274,6 +274,7 @@ pub struct Connection {
     port_forward_address: String,
     tx_to_cm: mpsc::UnboundedSender<ipc::Data>,
     authorized: bool,
+    scheduled_access: Option<crate::scheduled_access::Lease>,
     require_2fa: Option<totp_rs::TOTP>,
     keyboard: bool,
     clipboard: bool,
@@ -466,6 +467,7 @@ impl Connection {
             port_forward_address: "".to_owned(),
             tx_to_cm,
             authorized: false,
+            scheduled_access: None,
             keyboard: Self::permission(keys::OPTION_ENABLE_KEYBOARD, &control_permissions),
             clipboard: Self::permission(keys::OPTION_ENABLE_CLIPBOARD, &control_permissions),
             audio: Self::permission(keys::OPTION_ENABLE_AUDIO, &control_permissions),
@@ -1009,6 +1011,18 @@ impl Connection {
                     }
                 }
                 _ = second_timer.tick() => {
+                    // A permitted login must not outlive its shift or a
+                    // manager revocation. This also covers file transfers.
+                    let access_permitted = if conn.authorized {
+                        if let Some(lease) = conn.scheduled_access.as_mut() { lease.permitted().await }
+                        else { crate::access_control::is_allowed(&conn.lr.my_id) }
+                    } else { true };
+                    if !access_permitted {
+                        crate::access_control::report(&conn.lr.my_id, "deny", "active access expired or revoked");
+                        conn.send_close_reason_no_retry(crate::access_control::DENY_MSG).await;
+                        conn.on_close("scheduled access expired or revoked", true).await;
+                        break;
+                    }
                     #[cfg(windows)]
                     conn.portable_check();
                     raii::AuthedConnID::check_wake_lock_on_setting_changed();
@@ -2380,10 +2394,16 @@ impl Connection {
         }
         // After handling CloseReason messages, proceed to process other message types
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
+            if crate::scheduled_access::enabled() && self.scheduled_access.is_none() {
+                match crate::scheduled_access::consume(&lr, &self.hash).await {
+                    Ok(lease) => self.scheduled_access = Some(lease),
+                    Err(reason) => { self.send_login_error(reason).await; return false; }
+                }
+            }
             // Camprodest access control: refuse connections not currently permitted
             // for this employee id (manager toggle off or outside the shift window).
             // No-op on builds without the access URL/token baked in.
-            if !crate::access_control::is_allowed(&lr.my_id) {
+            if self.scheduled_access.is_none() && !crate::access_control::is_allowed(&lr.my_id) {
                 crate::access_control::report(&lr.my_id, "deny", "outside allowed window");
                 self.send_login_error(crate::access_control::DENY_MSG).await;
                 sleep(1.).await;
@@ -2539,6 +2559,14 @@ impl Connection {
             let allow_logon_screen_password =
                 crate::get_builtin_option(keys::OPTION_ALLOW_LOGON_SCREEN_PASSWORD) == "Y"
                     && is_logon();
+
+            if self.scheduled_access.is_some() {
+                if err_msg.is_empty() {
+                    if !self.send_logon_response_and_keep_alive().await { return false; }
+                    self.try_start_cm(lr.my_id.clone(), lr.my_name.clone(), self.authorized);
+                } else { self.send_login_error(err_msg).await; }
+                return true;
+            }
 
             if (password::approve_mode() == ApproveMode::Click && !allow_logon_screen_password)
                 || password::approve_mode() == ApproveMode::Both && !password::has_valid_password()

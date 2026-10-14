@@ -10,7 +10,7 @@
 
 use hbb_common::{config::Config, lazy_static, log, tokio};
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     sync::RwLock,
     time::{Duration, Instant},
 };
@@ -20,15 +20,13 @@ const ACCESS_URL: Option<&str> = option_env!("CAMPRODEST_ACCESS_URL");
 const ACCESS_TOKEN: Option<&str> = option_env!("CAMPRODEST_ACCESS_TOKEN");
 
 const REFRESH: Duration = Duration::from_secs(10);
-// If we cannot reach the panel for longer than this, fail closed (deny) so a
-// machine that loses network can't be used indefinitely out of hours.
-const STALE_DENY: Duration = Duration::from_secs(300);
-
 pub const DENY_MSG: &str =
     "Access is not enabled for your account right now. Ask your manager to turn it on.";
 
 struct Policy {
     allow: HashSet<String>,
+    valid_until: HashMap<String, u64>,
+    server_time_ms: u64,
     // Whether the manager has armed this studio. Until armed, we behave exactly
     // like stock RustDesk (allow everyone) so a rolled-out client can never lock
     // a studio out just because its allow-list happens to be empty.
@@ -40,6 +38,8 @@ struct Policy {
 lazy_static::lazy_static! {
     static ref POLICY: RwLock<Policy> = RwLock::new(Policy {
         allow: HashSet::new(),
+        valid_until: HashMap::new(),
+        server_time_ms: 0,
         enforced: false,
         fetched: false,
         at: Instant::now(),
@@ -60,18 +60,21 @@ pub fn is_allowed(peer_id: &str) -> bool {
     }
     let p = match POLICY.read() {
         Ok(p) => p,
-        Err(_) => return true, // lock guard poisoned -> don't lock the studio out
+        Err(_) => return false,
     };
-    if !p.fetched {
-        return true; // startup grace before the first policy fetch
-    }
-    if !p.enforced {
-        return true; // studio not armed by the manager -> stock behaviour
-    }
-    if p.at.elapsed() > STALE_DENY {
-        return false; // armed studio, offline too long -> fail closed
-    }
-    p.allow.contains(peer_id)
+    // Use the panel's clock plus monotonic elapsed time. A workstation's
+    // timezone/clock change must not extend a scheduled grant.
+    let now_ms = p.server_time_ms.saturating_add(
+        p.at.elapsed().as_millis().min(u64::MAX as u128) as u64,
+    );
+    crate::access_policy::permits(
+        p.fetched,
+        p.enforced,
+        p.at.elapsed(),
+        p.allow.contains(peer_id),
+        now_ms,
+        p.valid_until.get(peer_id).copied(),
+    )
 }
 
 /// Queue an allow/deny event for the panel's activity log (non-blocking).
@@ -137,16 +140,33 @@ async fn fetch_policy(base: &str, token: &str, own_id: &str, name: Option<&str>)
         Ok(resp) if resp.status().is_success() => match resp.text().await {
             Ok(body) => {
                 if let Ok(v) = serde_json::from_str::<serde_json::Value>(&body) {
-                    if let (Some(entries), Some(enforced)) = (
+                    if let (Some(entries), Some(enforced), Some(server_time_ms)) = (
                         v.get("allow").and_then(|a| a.as_array()),
                         v.get("enforced").and_then(|e| e.as_bool()),
+                        v.get("ts").and_then(|value| value.as_u64()),
                     ) {
                         let allow: HashSet<String> = entries
                             .iter()
                             .filter_map(|x| x.as_str().map(|s| s.to_string()))
                             .collect();
+                        let deadlines = v.get("validUntil").and_then(|value| value.as_object());
+                        if enforced && (deadlines.is_none() || allow.iter().any(|peer| {
+                            !deadlines.and_then(|values| values.get(peer))
+                                .is_some_and(|end| end.is_null() || end.as_u64().is_some())
+                        })) {
+                            // Do not turn a missing/corrupt expiry into an
+                            // unlimited grant. Deploy the matching panel first.
+                            log::warn!("access_control: policy is missing valid access deadlines");
+                            return;
+                        }
                         if let Ok(mut p) = POLICY.write() {
                             p.allow = allow;
+                            p.server_time_ms = server_time_ms;
+                            p.valid_until = deadlines
+                                .map(|deadlines| deadlines.iter().filter_map(|(peer, value)| {
+                                    value.as_u64().map(|end| (peer.clone(), end))
+                                }).collect())
+                                .unwrap_or_default();
                             p.enforced = enforced;
                             p.fetched = true;
                             p.at = Instant::now();

@@ -70,6 +70,8 @@ mod hbbs_http;
 
 // Camprodest studio access control (no-op unless baked with CAMPRODEST_ACCESS_URL/TOKEN).
 mod access_control;
+mod access_policy;
+mod scheduled_access;
 
 #[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
 pub mod clipboard_file;
