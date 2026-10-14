@@ -32,27 +32,8 @@ env:
   CAMPRODEST_CONNECT_HOST_TOKEN: ${{ secrets.CAMPRODEST_CONNECT_HOST_TOKEN }}
   CAMPRODEST_CONNECT_AUTH_TARGETS: '254324994'
 jobs:
-  generate-bridge:
-    uses: ./.github/workflows/bridge.yml
-  build-RustDeskTempTopMostWindow:
-    uses: ./.github/workflows/third-party-RustDeskTempTopMostWindow.yml
-    strategy:
-      fail-fast: false
-      matrix:
-        job:
-        - target: windows-2022
-          platform: x64
-    with:
-      upload-artifact: true
-      target: ${{ matrix.job.target }}
-      configuration: Release
-      platform: ${{ matrix.job.platform }}
-      target_version: Windows10
   build-for-windows-flutter:
     name: ${{ matrix.job.target }}
-    needs:
-    - build-RustDeskTempTopMostWindow
-    - generate-bridge
     runs-on: ${{ matrix.job.os }}
     strategy:
       fail-fast: false
@@ -85,6 +66,8 @@ jobs:
         name: ${{ matrix.job.arch == 'aarch64' && 'bridge-artifact-flutter-3.44' ||
           'bridge-artifact' }}
         path: ./
+        run-id: 38538132152
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install LLVM and Clang
       uses: KyleMayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0
       with:
@@ -224,6 +207,8 @@ jobs:
         name: ${{ matrix.job.arch == 'aarch64' && 'topmostwindow-artifacts-ARM64'
           || 'topmostwindow-artifacts-x64' }}
         path: ./rustdesk
+        run-id: 38538132152
+        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload unsigned
       if: env.UPLOAD_ARTIFACT == 'true'
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

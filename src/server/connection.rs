@@ -1013,9 +1013,10 @@ impl Connection {
                 _ = second_timer.tick() => {
                     // A permitted login must not outlive its shift or a
                     // manager revocation. This also covers file transfers.
-                    let access_permitted = if conn.authorized {
-                        if let Some(lease) = conn.scheduled_access.as_mut() { lease.permitted().await }
-                        else { crate::access_control::is_allowed(&conn.lr.my_id) }
+                    let access_permitted = if let Some(lease) = conn.scheduled_access.as_mut() {
+                        lease.permitted().await
+                    } else if conn.authorized {
+                        crate::access_control::is_allowed(&conn.lr.my_id)
                     } else { true };
                     if !access_permitted {
                         crate::access_control::report(&conn.lr.my_id, "deny", "active access expired or revoked");
@@ -1514,6 +1515,16 @@ impl Connection {
     // Returns whether this connection should be kept alive.
     // `true` does not necessarily mean authorization succeeded (e.g. REQUIRE_2FA case).
     async fn send_logon_response_and_keep_alive(&mut self) -> bool {
+        if crate::scheduled_access::enabled_for(&Config::get_id()) {
+            let permitted = match self.scheduled_access.as_mut() {
+                Some(lease) => lease.permitted().await,
+                None => false,
+            };
+            if !permitted {
+                self.send_login_error(crate::access_control::DENY_MSG).await;
+                return false;
+            }
+        }
         if self.authorized {
             return true;
         }
@@ -2394,6 +2405,10 @@ impl Connection {
         }
         // After handling CloseReason messages, proceed to process other message types
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
+            if self.scheduled_access.as_ref().is_some_and(|lease| !lease.matches(&lr)) {
+                self.send_login_error(crate::access_control::DENY_MSG).await;
+                return false;
+            }
             if crate::scheduled_access::enabled_for(&Config::get_id()) && self.scheduled_access.is_none() {
                 match crate::scheduled_access::consume(&lr, &self.hash).await {
                     Ok(lease) => self.scheduled_access = Some(lease),
