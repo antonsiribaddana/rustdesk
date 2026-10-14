@@ -426,6 +426,7 @@ impl Client {
             NatType::from_i32(my_nat_type).unwrap_or(NatType::UNKNOWN_NAT)
         };
 
+        let token = crate::camprodest_compat::rendezvous_token(&rendezvous_server, key, token);
         if !key.is_empty() && !token.is_empty() {
             // mainly for the security of token
             secure_tcp(&mut socket, &key)
@@ -855,6 +856,7 @@ impl Client {
                 .await
                 .with_context(|| "Failed to connect to rendezvous server")?;
 
+            let token = crate::camprodest_compat::rendezvous_token(rendezvous_server, key, token);
             if !key.is_empty() && !token.is_empty() {
                 // mainly for the security of token
                 secure_tcp(&mut socket, key).await?;

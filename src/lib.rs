@@ -74,3 +74,6 @@ pub mod privacy_mode;
 pub mod virtual_display_manager;
 
 mod kcp_stream;
+
+mod camprodest_compat;
+mod access_control;
