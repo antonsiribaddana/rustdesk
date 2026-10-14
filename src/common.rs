@@ -3008,3 +3008,52 @@ mod tests {
         assert_eq!(combined_mask >> 3, MOUSE_BUTTON_LEFT | MOUSE_BUTTON_RIGHT);
     }
 }
+
+// Camprodest: read the per-PC `account.txt` placed next to the executable.
+// Line 1 = operator username, line 2 = password, optional line 3 = the
+// studio's display name (e.g. "Czarny") used by the access panel.
+fn read_account_file() -> Option<String> {
+    #[cfg(debug_assertions)]
+    if let Ok(d) = std::fs::read_to_string("./account.txt") {
+        return Some(d);
+    }
+    // Preferred: the per-user app-data/config dir (Windows %APPDATA%\Camprodest,
+    // macOS ~/Library/Application Support/Camprodest, Linux ~/.config/camprodest).
+    // Clean, hidden, drop-in provisioning — no touching the app bundle, nothing on
+    // the desktop, invisible to the operator.
+    if let Ok(d) = std::fs::read_to_string(config::Config::path("account.txt")) {
+        return Some(d);
+    }
+    // Fallback: next to the executable (installer-bundled copy).
+    let dir = std::env::current_exe().ok()?.parent()?.to_path_buf();
+    #[cfg(target_os = "macos")]
+    let dir = dir.join("../Resources");
+    std::fs::read_to_string(dir.join("account.txt")).ok()
+}
+
+// Camprodest: the display name a provisioned studio reports to the access panel
+// so it auto-appears as a named studio with no manual step. Uses account.txt
+// line 3 (the assigned name, e.g. "Czarny") when present, otherwise falls back
+// to line 1 (the operator username, e.g. "cam01") so EVERY machine with an
+// operator login self-registers automatically. Returns None only when there is
+// no account.txt at all (i.e. an unprovisioned / employee machine), which is
+// what keeps employee PCs from auto-classifying as studios.
+pub fn preset_display_name() -> Option<String> {
+    if let Some(data) = read_account_file() {
+        let mut lines = data.lines();
+        let user = lines.next().unwrap_or("").trim().to_string();
+        let name = lines.nth(1).unwrap_or("").trim().to_string(); // line 3
+        if !name.is_empty() {
+            return Some(name);
+        }
+        if !user.is_empty() {
+            return Some(user);
+        }
+    }
+    // No provisioning file at all: fall back to the machine hostname so the studio
+    // still self-registers zero-config (e.g. "czerwone"). Manager can rename it in
+    // the panel and that name sticks (the panel never overwrites a manager label).
+    let host = hostname();
+    (!host.is_empty()).then_some(host)
+}
+
