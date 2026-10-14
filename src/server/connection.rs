@@ -2394,7 +2394,7 @@ impl Connection {
         }
         // After handling CloseReason messages, proceed to process other message types
         if let Some(message::Union::LoginRequest(lr)) = msg.union {
-            if crate::scheduled_access::enabled() && self.scheduled_access.is_none() {
+            if crate::scheduled_access::enabled_for(&Config::get_id()) && self.scheduled_access.is_none() {
                 match crate::scheduled_access::consume(&lr, &self.hash).await {
                     Ok(lease) => self.scheduled_access = Some(lease),
                     Err(reason) => { self.send_login_error(reason).await; return false; }

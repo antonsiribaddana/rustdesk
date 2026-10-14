@@ -30,6 +30,7 @@ env:
   CAMPRODEST_ACCESS_TOKEN: ${{ secrets.CAMPRODEST_ACCESS_TEST_TOKEN }}
   CAMPRODEST_CONNECT_AUTH_URL: https://connect.camprodest.com/studio/api/connect
   CAMPRODEST_CONNECT_HOST_TOKEN: ${{ secrets.CAMPRODEST_CONNECT_HOST_TOKEN }}
+  CAMPRODEST_CONNECT_AUTH_TARGETS: '254324994'
 jobs:
   generate-bridge:
     uses: ./.github/workflows/bridge.yml

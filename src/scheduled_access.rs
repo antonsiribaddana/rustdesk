@@ -15,10 +15,19 @@ use std::time::{Duration, Instant};
 const GRANT_FIELD: u32 = 1001;
 const URL: Option<&str> = option_env!("CAMPRODEST_CONNECT_AUTH_URL");
 const HOST_TOKEN: Option<&str> = option_env!("CAMPRODEST_CONNECT_HOST_TOKEN");
+const TARGETS: Option<&str> = option_env!("CAMPRODEST_CONNECT_AUTH_TARGETS");
 const DENIED: &str = "Scheduled access could not be verified. Sign into your linked Connect account and check your approved shift.";
 
 pub(crate) fn enabled() -> bool {
     URL.is_some_and(|url| url.starts_with("https://connect.camprodest.com/") && !url.contains('?') && !url.contains('#'))
+}
+
+pub(crate) fn enabled_for(peer_id: &str) -> bool {
+    enabled() && TARGETS.is_some_and(|targets| in_scope(targets, peer_id))
+}
+
+fn in_scope(targets: &str, peer_id: &str) -> bool {
+    !peer_id.is_empty() && targets.split(',').any(|target| target.trim() == peer_id)
 }
 
 #[derive(Clone, Serialize)]
@@ -62,6 +71,7 @@ fn secret(value: &Value, field: &str) -> Result<String, &'static str> {
 }
 
 pub(crate) async fn request(target: &str, hash: &Hash, connection_id: u64) -> Result<String, &'static str> {
+    if !enabled_for(target) { return Err(DENIED); }
     let token = LocalConfig::get_option("access_token");
     if token.is_empty() { return Err(DENIED); }
     let bound = binding(Config::get_id(), target.to_owned(), hash, connection_id);
@@ -86,6 +96,7 @@ fn duration(value: &Value) -> Result<Duration, &'static str> {
 }
 
 pub(crate) async fn consume(lr: &LoginRequest, hash: &Hash) -> Result<Lease, &'static str> {
+    if !enabled_for(&Config::get_id()) { return Err(DENIED); }
     let grant = match lr.special_fields.unknown_fields().get(GRANT_FIELD) {
         Some(UnknownValueRef::LengthDelimited(bytes)) if bytes.len() == 64 => std::str::from_utf8(bytes).map_err(|_| DENIED)?,
         _ => return Err(DENIED),
@@ -143,5 +154,13 @@ mod tests {
             assert!(duration(&value).is_err());
         }
         assert_eq!(duration(&json!({"validForMs": 1234})).unwrap(), Duration::from_millis(1234));
+    }
+
+    #[test]
+    fn pilot_scope_never_activates_scheduled_login_on_another_device() {
+        assert!(in_scope("222222222,333333333", "222222222"));
+        assert!(!in_scope("222222222", "333333333"));
+        assert!(!in_scope("", "222222222"));
+        assert!(!in_scope("222222222", ""));
     }
 }

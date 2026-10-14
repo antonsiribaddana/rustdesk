@@ -3477,8 +3477,13 @@ pub async fn handle_hash(
     peer: &mut Stream,
 ) {
     lc.write().unwrap().hash = hash.clone();
-    if crate::scheduled_access::enabled() && lc.read().unwrap().other_server.is_none() {
-        let (target, session_id) = { let config = lc.read().unwrap(); (config.id.clone(), config.session_id) };
+    let scheduled_target = {
+        let config = lc.read().unwrap();
+        if config.other_server.is_none() && crate::scheduled_access::enabled_for(&config.id) {
+            Some((config.id.clone(), config.session_id))
+        } else { None }
+    };
+    if let Some((target, session_id)) = scheduled_target {
         match crate::scheduled_access::request(&target, &hash, session_id).await {
             Ok(grant) => {
                 let mut message = lc.read().unwrap().create_login_msg(String::new(), String::new(), vec![]);
