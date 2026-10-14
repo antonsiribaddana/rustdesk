@@ -426,7 +426,7 @@ impl Client {
             NatType::from_i32(my_nat_type).unwrap_or(NatType::UNKNOWN_NAT)
         };
 
-        let token = crate::camprodest_compat::rendezvous_token(&rendezvous_server, key, token);
+        let token = crate::camprodest_compat::rendezvous_token(&rendezvous_server, &key, &token).to_owned();
         if !key.is_empty() && !token.is_empty() {
             // mainly for the security of token
             secure_tcp(&mut socket, &key)
